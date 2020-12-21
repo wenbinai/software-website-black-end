@@ -3,10 +3,14 @@ package edu.nefu.softwarewebsite.service.impl;
 import edu.nefu.softwarewebsite.dao.UserDao;
 import edu.nefu.softwarewebsite.pojo.User;
 import edu.nefu.softwarewebsite.service.UserService;
+import edu.nefu.softwarewebsite.util.Constants;
+import edu.nefu.softwarewebsite.util.CookieUtil;
 import edu.nefu.softwarewebsite.util.ResponseResult;
 import edu.nefu.softwarewebsite.util.TextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -14,7 +18,7 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
     @Override
-    public ResponseResult login(User user) {
+    public ResponseResult login(User user, HttpServletResponse response) {
         // 检验参数
         if (user == null) {
             return ResponseResult.failResponse()
@@ -35,11 +39,15 @@ public class UserServiceImpl implements UserService {
             return ResponseResult.failResponse()
                     .setMessage("用户名不存在");
         }
-        // TODO: 不以明文存密码
-        if (userFromDB.getPassword() != user.getPassword()) {
+        System.out.println("userFromDB==>" + userFromDB);
+        System.out.println("user password==>" + user.getPassword());
+        // TODO: 不以明文存密码 对比密码
+        if (!userFromDB.getPassword().equals(user.getPassword())) {
             return ResponseResult.failResponse()
                     .setMessage("用户名或密码错误");
         }
+        // 生成cookie
+        CookieUtil.setUpCookie(response, Constants.Cookie.KEY, "admin");
         return ResponseResult.successResponse()
                 .setMessage("登陆成功");
     }

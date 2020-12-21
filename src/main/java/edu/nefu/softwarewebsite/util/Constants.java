@@ -9,4 +9,8 @@ public interface Constants {
         // 文章处于草稿阶段
         String TEST = "2";
     }
+
+    interface Cookie {
+        String KEY = "key";
+    }
 }
